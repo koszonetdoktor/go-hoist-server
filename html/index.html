@@ -1,0 +1,65 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Chat</title>
+    <script src="jquery-3.4.0.min.js"></script>
+  </head>
+
+  <style>
+    #test-text {
+      text-align: left;
+      background: #f1f1f1;
+      width: 500px;
+      min-height: 300px;
+      padding: 20px;
+    }
+    #hoist-grid {
+      display: felx;
+    }
+  </style>
+
+  <body>
+    <center>
+      <h3 id="test-text">TEST text</h3>
+      <div id="hoist-grid">
+          {{range $index, $element := .}}
+          <div class="css-jgti3c-Hoist">
+              <div class="css-1qpxlga-HoistContainer">
+                  <div class="css-u8zljz-HoistName">{{$element}}</div>
+                  <div class="css-cvkwc9-Positions">
+                      <div class="actual-pos"></div>
+                      <div class="css-70jwtw-DestinationPosition"></div>
+                  </div>
+                  {{/* <div class="css-1l4pwpv-Signs">
+                      <div class="css-ydeeq8-SignIcon">
+                          <div>VHF</div>
+                      </div>
+                      <div class="css-ydeeq8-SignIcon">
+                          <div>VHL</div>
+                      </div>
+                  </div> */}}
+              </div>
+              <div class="css-yvplbw-PositionBar">
+                  <div class="css-1y5q81t"></div>
+                  <div class="css-1gw55wr-DestPositionMarker"></div>
+              </div>
+          </div>
+          {{end}}
+      </div>
+    </center>
+    
+    <script>
+      var url = "ws://" + window.location.host + "/ws";
+      var ws = new WebSocket(url);
+      var texts = document.getElementsByClassName("actual-pos");
+      console.log("element", texts)
+      console.log("myws", ws)
+      ws.onmessage = function (msg) {
+          Object.entries(texts).map(( object ) => {
+            object[1].innerText = msg.data
+          });
+      };
+    </script>
+  </body>
+</html>

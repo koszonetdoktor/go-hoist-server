@@ -1,0 +1,118 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Chat</title>
+    <link rel="stylesheet" href="index.css">
+  </head>
+
+  <style>
+    #hoist-grid-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-content: flex-start;
+      height: 450px;
+    }
+
+    #hoist-grid {
+      display: flex;
+      justify-content: space-around
+    }
+    .Hoist {
+       position: relative;
+    }
+    .HoistContainer {
+      margin: 4px;
+      border-radius: 4px;
+      width: 80px;
+      height: 90px;
+      background-color: gray;
+      color: white;
+      font-family: Roboto, sans-serif;
+      border: 2px solid transparent;
+      display: grid;
+      grid-template-columns:  2fr 1fr;
+      grid-template-rows:     1fr 1fr 1fr; 
+      grid-template-areas:    "id        signs"
+                              "positions signs"
+                              "positions signs";
+    
+    }
+    .HoistName {
+      margin: 2px;
+      border-radius: 2px;
+      max-height: 26px;
+      max-width: 46px;
+      grid-area: id;
+    }
+    .Positions {
+      grid-area: positions;
+      padding: 0 4px;
+    }
+    .PositionBar {
+      position: absolute;
+      height: 280px;
+      width: 8px;
+      background-color: transparent;
+      border: 1px solid white;
+      border-top: none;
+      top: 94px;
+      right: 40px;
+      z-index: -1;
+    }
+    .ActPosBar {
+      position: absolute;
+      width: 100%;
+      background-color: orange;
+    }
+  </style>
+
+  <body>
+    <div id="hoist-grid-wrapper">
+      <div id="hoist-grid">
+          {{range $index, $element := .}}
+          <div class="Hoist">
+              <div class="HoistContainer">
+                  <div class="HoistName">{{$element}}</div>
+                  <div class="Positions">
+                      <div class="actual-pos"></div>
+                      <div class="DestinationPosition"></div>
+                  </div>
+              </div>
+              <div class="PositionBar">
+                  <div
+                    class="ActPosBar"
+                  ></div>
+                  <div class="DestPositionMarker"></div>
+              </div>
+          </div>
+          {{end}}
+      </div>
+    </div>
+    
+    <script>
+      var url = "ws://" + window.location.host + "/ws";
+      var ws = new WebSocket(url);
+      var texts = document.getElementsByClassName("actual-pos");
+      var bars = document.getElementsByClassName("ActPosBar")
+      console.log("element", texts)
+      console.log("myws", ws)
+      ws.onmessage = function (msg) {
+          {{/* msg.data.split(" ").forEach(poses => {
+            let splitPos = poses.split("/")
+            if(texts[splitPos[0]]) {
+             texts[splitPos[0]][1].innerText = splitPos[1] 
+            }
+          }) */}}
+          let splitData = msg.data ? msg.data.split(" ") : []
+          Object.entries(texts).map(( object,i ) => {
+            object[1].innerText = splitData.length ? splitData[i] : ""
+          })
+          Object.entries(bars).map(( object,i ) => {
+            object[1].style.height = splitData.length ? `${Number(splitData[i])/10}px` : ""
+            {{/* object[1].style.height = `${(Number(msg.data)/2.8)}px` */}}
+          });
+      };
+    </script>
+  </body>
+</html>
